@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Basic Syntax</title>
+    <style type="text/css">
+        #empTable{
+            width: 80%;
+            border: 1px solid blue;
+            margin: 0px auto;
+        }
+        #empTable th,td{
+            border: 1px solid green;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<!--th:text-->
+<!--向双标签中添加常量-->
+<span th:text="msg"></span><br>
+<!--向双标签中添加变量-->
+<span th:text="${msg}"></span><br>
+<hr>
+
+<!--th:value: 向表单元素中填充值-->
+<!--向表单元素中添加常量-->
+<input type="text" th:value="msg"><br>
+<!--向表单元素中添加变量-->
+<input type="text" th:value="${msg}"><br>
+<hr>
+
+<!--th:if-->
+<!--展示单个员工信息:-->
+<span th:if="${emp}!=null">
+    工号:<span th:text="${emp.empno}"></span><br/>
+    姓名:<span th:text="${emp.ename}"></span><br/>
+    职务:<span th:text="${emp.job}"></span><br/>
+    上级:<span th:text="${emp.mgr}"></span><br/>
+    入职日期:<span th:text="${emp.hiredate}"></span><br/>
+    工资:<span th:text="${emp.sal}"></span><br/>
+    补助:<span th:text="${emp.comm}"></span><br/>
+    部门号:<span th:text="${emp.deptno}"></span><br/>
+</span>
+<hr>
+
+<span  th:if="${empList}!=null">
+    <span  th:if="${empList.size()} ne 0">
+        工号:<span th:text="${empList[0].empno}"></span><br/>
+        姓名:<span th:text="${empList[0].ename}"></span><br/>
+        职务:<span th:text="${empList[0].job}"></span><br/>
+        上级:<span th:text="${empList[0].mgr}"></span><br/>
+        入职日期:<span th:text="${empList[0].hiredate}"></span><br/>
+        工资:<span th:text="${empList[0].sal}"></span><br/>
+        补助:<span th:text="${empList[0].comm}"></span><br/>
+        部门号:<span th:text="${empList[0].deptno}"></span><br/>
+    </span>
+</span>
+<hr>
+
+<!--th:each-->
+<table  id="empTable" cellpadding="0px" cellspacing="0px">
+    <tr>
+        <th>索引</th>
+        <th>序号</th>
+        <th>总人数</th>
+        <th>偶数索引?</th>
+        <th>奇数索引?</th>
+        <th>第一?</th>
+        <th>最后?</th>
+        <th>工号</th>
+        <th>姓名</th>
+        <th>职务</th>
+        <th>上级</th>
+        <th>入职日期</th>
+        <th>工资</th>
+        <th>补助</th>
+        <th>部门号</th>
+        <th>删除</th>
+    </tr>
+    <!--对空值作出处理-->
+    <tr th:each="emps,i:${empList}" th:class="${i.odd}? a:b">
+        <td th:text="${i.index}"></td>
+        <td th:text="${i.count}"></td>
+        <td th:text="${i.size}"></td>
+        <td th:text="${i.odd}"></td>
+        <td th:text="${i.even}"></td>
+        <td th:text="${i.first}"></td>
+        <td th:text="${i.last}"></td>
+        <td th:text="${emps.empno}"></td>
+        <td th:text="${emps.ename}"></td>
+        <td th:text="${emps.job} eq null? boss : ${emps.job}"></td>
+        <td th:text="${emps.mgr} eq null? 0: ${emps.mgr}"></td>
+        <td th:text="${emps.hiredate} eq null? null : ${emps.hiredate}"></td>
+        <td th:text="${emps.sal} eq null? 0 : ${emps.sal}"></td>
+        <td th:text="${emps.comm} eq null? 0 : ${emps.comm}"></td>
+        <td th:text="${emps.deptno}"></td>
+        <td>
+            <!--th:href-->
+<!--            <a th:href="@{remove(empno=${emps.empno},ename=${emps.ename})}">-->
+<!--                delete-->
+<!--            </a>-->
+            <!--th:onclick-->
+            <a href="javascript:void(0)" th:onclick="removeEmp([[${emps.empno}]],[[${emps.ename}]])">delete</a>
+        </td>
+    </tr>
+</table>
+<script>
+    function removeEmp(empno,ename){
+        var result =confirm("确定要删除编号为"+empno+"的"+ename);
+        if(result){
+            window.location.href="remove?empno="+empno+"&ename="+ename;
+        }
+    }
+</script>
+<hr>
+
+<!--标准变量表达式支持的运算符-->
+<!--算数运算符: + , - , * , / , %-->
+<span th:text="1+1"></span>
+<span th:text="'1'+1"></span>
+<span th:text="${emp.empno}+1"></span>
+<span th:text="${emp.empno+1}"></span>
+<hr>
+
+<!--关系运算符:gt,ge,eq,lt,le,ne-->
+<!--逻辑运算符:&&或and,||或or:表示或者,-->
+<div th:text="1>0 and 2<3"></div>
+<div th:text="1>0 and 2>3"></div>
+<div th:text="1>0 or 2<3"></div>
+<div th:text="1>0 or 2>3"></div>
+<hr/>
+
+<div th:text="${emp.sal eq null? 0 : emp.sal} ge 800"></div>
+<div th:text="(${emp.sal} eq null? 0 : ${emp.sal}) ge 800"></div>
+<div th:text="(${emp.sal eq null? 0: emp.sal} ge 800) and (${emp.deptno} eq 20)"></div>
+<div th:text="(${emp.sal eq null? 0: emp.sal}ge 800) or (${emp.deptno } ne 20)"></div>
+<div th:text="${emp.sal ge 800 or emp.deptno ne 20 }"></div>
+<hr>
+
+<!--三目运算符-->
+<tr th:each="emp,i:${empList}" th:class="${i.odd}?a:b">
+<hr>
+
+</body>
+</html>
